@@ -59,7 +59,7 @@ class REST(object):
         key_id=None,
         secret_key=None,
         base_url=None,
-        api_version=None,
+        api_version=get_api_version,
         oauth=None
     ):
         self._key_id, self._secret_key, self._oauth = get_credentials(
