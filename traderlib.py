@@ -133,7 +133,9 @@ class Trader:
         while True:
             try:  # fetch the data
                 if interval is '30Min':
-                    df = self.alpaca.get_barset(stock.name, '5Min', limit).df[stock.name]
+ #                   df = self.alpaca.get_barset(stock.name, '5Min', limit).df[stock.name]
+                    df = self.alpaca.get_barset(stock.name, '5Min', limit)
+                    print("THis is a ref : {}".format(stock.df))
                     stock.df = df.resample('30min').agg({
                         'open': 'first',
                         'high': 'max',
@@ -143,6 +145,7 @@ class Trader:
                     })
 
                 else:
+                    print("THis is a ref : {}".format(df))
                     stock.df = self.alpaca.get_barset(stock.name, interval, limit).df[stock.name]
 
             except Exception as e:
@@ -151,7 +154,8 @@ class Trader:
                 time.sleep(gvars.sleepTimes['LH'])
 
             try:  # check if the data is updated
-
+                
+                print("THis is a ref : {}".format(df))
                 lastEntry = stock.df.last('5Min').index[0]  # entrada (vela) dels últims 5min
                 lastEntry = lastEntry.tz_convert('utc')
                 nowTimeDelta = datetime.now(timezone.utc)  # ara - 5min
@@ -319,6 +323,7 @@ class Trader:
                 self.load_historical_data(stock, interval=gvars.fetchItval['big'])
 
                 # calculate the EMAs
+                print("THis is a ref : {}".format(stock.df))
                 ema9 = ti.ema(stock.df.close.dropna().to_numpy(), 9)
                 ema26 = ti.ema(stock.df.close.dropna().to_numpy(), 26)
                 ema50 = ti.ema(stock.df.close.dropna().to_numpy(), 50)
@@ -378,6 +383,7 @@ class Trader:
                     self.load_historical_data(stock, interval=gvars.fetchItval['little'])
 
                 # calculate the EMAs
+                print("THis is a ref : {}".format(stock.df))
                 ema9 = ti.ema(stock.df.close.dropna().to_numpy(), 9)
                 ema26 = ti.ema(stock.df.close.dropna().to_numpy(), 26)
                 ema50 = ti.ema(stock.df.close.dropna().to_numpy(), 50)
@@ -427,6 +433,7 @@ class Trader:
                 self.load_historical_data(stock, interval=gvars.fetchItval['little'])
 
             # calculations
+            print("THis is a ref : {}".format(stock.df))
             rsi = ti.rsi(stock.df.close.values, 14)  # it uses 14 periods
             rsi = rsi[-1]
 
@@ -456,6 +463,7 @@ class Trader:
                     self.load_historical_data(stock, interval=gvars.fetchItval['little'])
 
                 # càlculs
+                print("THis is a ref : {}".format(stock.df))
                 stoch_k_full, stoch_d_full = ti.stoch(
                     stock.df.high.values,
                     stock.df.low.values,
@@ -490,6 +498,7 @@ class Trader:
                     return False
 
         except Exception as e:
+            print("THis is a ref : {}".format(stock.df))
             self._L.info('ERROR_GS: error when getting stochastics')
             self._L.info(stock.df)
             self._L.info(stock.direction)
@@ -502,6 +511,7 @@ class Trader:
 
         self._L.info('Position entered')
 
+        print("THis is a ref : {}".format(stock.df))
         stock.avg_entry_price = float(self.alpaca.get_position(stock.name).avg_entry_price)
         ema50 = ti.ema(stock.df.close.dropna().to_numpy(), 50)
         stopLoss = self.set_stoploss(ema50, direction=stock.direction)  # stoploss = EMA50

@@ -64,7 +64,8 @@ class REST(object):
     ):
         self._key_id, self._secret_key, self._oauth = get_credentials(
             key_id, secret_key, oauth)
-        self._base_url = base_url or get_base_url()
+#        self._base_url = base_url or get_base_url()
+        self._base_url = get_base_url()
         self._api_version = get_api_version(api_version)
         self._session = requests.Session()
         self._retry = int(os.environ.get('APCA_RETRY_MAX', 3))
